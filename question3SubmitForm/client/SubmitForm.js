@@ -23,7 +23,7 @@ class CourseForm extends React.Component {
     }
   }
 
-  async handleSubmit(e) {
+  handleSubmit(e) {
     e.preventDefault();
     let temp = false;
     const dataToSendBackEnd = {};
@@ -39,7 +39,7 @@ class CourseForm extends React.Component {
     }
     // If there is calculus in one of the input choices then proceed to send the data to backend //
     if (temp) {
-      await this.postRequest(dataToSendBackEnd);
+      this.postRequest(dataToSendBackEnd);
     } else {
       // Set validation to false if there is no calculus so that the page renders to have calculus as a choice //
       this.setState({ validation: false });
