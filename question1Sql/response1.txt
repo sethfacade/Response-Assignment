@@ -1,0 +1,8 @@
+SELECT c.code, c.govt_debt/c.gdp_per_capita AS avg_gov_debt_per_capita
+FROM (SELECT *
+        FROM countries
+        WHERE gdp_per_capita>40000 AND year >= YEAR(CURDATE())-4
+     ) AS c
+GROUP BY code
+ORDER BY avg_gov_debt_per_capita DESC
+LIMIT 3
