@@ -14,17 +14,16 @@ class CourseForm extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  // Would normally do ajax requests in redux store by creating thunks //
-  postRequest(data){
-    try{
-      await axios.post(`/api/submit`, data)
-    }catch(err){
-      console.error('Unable to post the data')
+  async postRequest(data) {
+    try {
+      await axios.post(`/api/submit`, data);
+      alert("Form has been succesfuly submitted!");
+    } catch (err) {
+      console.error("Unable to post the data");
     }
-
   }
 
-  handleSubmit(e) {
+  async handleSubmit(e) {
     e.preventDefault();
     let temp = false;
     const dataToSendBackEnd = {};
@@ -40,9 +39,9 @@ class CourseForm extends React.Component {
     }
     // If there is calculus in one of the input choices then proceed to send the data to backend //
     if (temp) {
-      this.postRequest(dataToSendBackEnd);
+      await this.postRequest(dataToSendBackEnd);
     } else {
-    // Set validation to false if there is no calculus so that the page renders to have calculus as a choice //
+      // Set validation to false if there is no calculus so that the page renders to have calculus as a choice //
       this.setState({ validation: false });
     }
   }
@@ -84,4 +83,4 @@ class CourseForm extends React.Component {
   }
 }
 
-export default CourseForm
+export default CourseForm;

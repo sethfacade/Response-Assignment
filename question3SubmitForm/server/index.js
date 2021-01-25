@@ -11,7 +11,7 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(express.static(path.join(__dirname, "./path/to/static/assets")));
+app.use(express.static(path.join(__dirname, "..", "..", "public")));
 
 app.use("/api", require("./api"));
 
@@ -26,7 +26,7 @@ app.use((req, res, next) => {
 });
 
 app.get("*", function (req, res) {
-  res.sendFile(path.join(__dirname, "./path/to/index.html"));
+  res.sendFile(path.join(__dirname, "..", "public/index.html"));
 });
 
 // error handling middleware
