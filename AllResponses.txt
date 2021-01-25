@@ -1,0 +1,168 @@
+Question 1
+SELECT c.code, c.govt_debt/c.gdp_per_capita AS avg_gov_debt_per_capita
+FROM (SELECT *
+        FROM countries
+        WHERE gdp_per_capita>40000 AND year >= YEAR(CURDATE())-4
+     ) AS c
+GROUP BY code
+ORDER BY avg_gov_debt_per_capita DESC
+LIMIT 3
+
+
+
+Question 2
+class Man {
+  constructor() {
+    this.openOrCloseMouth = null;
+    this.occupation = "";
+  }
+  open() {
+    this.openOrCloseMouth = true;
+  }
+  close() {
+    this.openOrCloseMouth = false;
+  }
+  whoIsAsking(Man, openOrClose) {
+    if (Man.occupation === "doctor") {
+      if (openOrClose === "open") {
+        this.open();
+        return this;
+      } else if (openOrClose === "close") {
+        this.close();
+        return this;
+      }
+    } else {
+      return `I will only follow commands from a doctor`;
+    }
+  }
+}
+
+class Doctor extends Man {
+  constructor() {
+    super();
+    this.occupation = "doctor";
+  }
+}
+
+class Receptionist extends Man {
+  constructor() {
+    super();
+    this.occupation = "receptionist";
+  }
+}
+
+
+
+Question 3
+FrontEnd Using React
+class CourseForm extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      choiceA: "",
+      choiceB: "",
+      choiceC: "",
+      validation: true,
+    };
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  // I would usually do the ajax call in a thunk in redux but since there is only one I just called it here //
+  async postRequest(data) {
+    try {
+      await axios.post(`/api/submit`, data);
+      alert("Form has been succesfuly submitted!");
+    } catch (err) {
+      console.error("Unable to post the data");
+    }
+  }
+
+  handleSubmit(e) {
+    e.preventDefault();
+    let temp = false;
+    const dataToSendBackEnd = {};
+
+    // Loop through the current state and if it's a string, convert it to lowercase and check if one of them has calculus in it //
+    for (let choices in this.state) {
+      if (typeof this.state[choices] === "string") {
+        dataToSendBackEnd[choices] = this.state[choices].toLowerCase();
+        if (dataToSendBackEnd[choices] === "calculus") {
+          temp = true;
+        }
+      }
+    }
+    // If there is calculus in one of the input choices then proceed to send the data to backend //
+    if (temp) {
+      this.setState({ validation: true });
+      this.postRequest(dataToSendBackEnd);
+    } else {
+      // Set validation to false if there is no calculus so that the page renders to have calculus as a choice //
+      this.setState({ validation: false });
+    }
+  }
+
+  handleChange(e) {
+    this.setState({ [e.target.name]: e.target.value });
+  }
+  render() {
+    const validation = this.state.validation;
+    return (
+      <div>
+        <form onSubmit={(e) => this.handleSubmit(e)}>
+          <label htmlFor="choiceA">Choice A: </label>
+          <input
+            name="choiceA"
+            type="text"
+            value={this.state.choiceA}
+            onChange={this.handleChange}
+          />
+          <label htmlFor="choiceB">Choice B:</label>
+          <input
+            name="choiceB"
+            type="text"
+            value={this.state.choiceB}
+            onChange={this.handleChange}
+          />
+          <label htmlFor="choiceC">Choice C:</label>
+          <input
+            name="choiceC"
+            type="text"
+            value={this.state.choiceC}
+            onChange={this.handleChange}
+          />
+          <button type="submit">Submit</button>
+        </form>
+        {!validation && <div>Please have Calculus as one of your choices</div>}
+      </div>
+    );
+  }
+}
+
+Backend (Express,PostgreSQL, Sequelize):
+// Since I am using Sequelize ORM, direct SQL injection into input fields would not work //
+// Post route //
+router.post("/submit", async (req, res, next) => {
+  try {
+    const { choiceA, choiceB, choiceC } = req.body;
+    const dataToCreate = { choiceA, choiceB, choiceC };
+    let validation = false;
+
+    for (let choices in dataToCreate) {
+      dataToCreate[choices] = dataToCreate[choices].toLowerCase();
+      if (dataToCreate[choices] === "calculus") {
+        validation = true;
+      }
+    }
+    if (validation) {
+      await Student.create(dataToCreate);
+      res.status(201).send("You have succesful submitted your courses");
+    } else {
+      return res
+        .status(406)
+        .send("You need to have calculus in one of your inputs");
+    }
+  } catch (err) {
+    next(err);
+  }
+});
