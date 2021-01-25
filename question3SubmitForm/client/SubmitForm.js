@@ -14,6 +14,7 @@ class CourseForm extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  // I would usually do the ajax call in a thunk in redux but since there is only one I just called it here //
   async postRequest(data) {
     try {
       await axios.post(`/api/submit`, data);
@@ -39,6 +40,7 @@ class CourseForm extends React.Component {
     }
     // If there is calculus in one of the input choices then proceed to send the data to backend //
     if (temp) {
+      this.setState({ validation: true });
       this.postRequest(dataToSendBackEnd);
     } else {
       // Set validation to false if there is no calculus so that the page renders to have calculus as a choice //

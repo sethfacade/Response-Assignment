@@ -1,23 +1,22 @@
 const router = require("express").Router();
-// Using a created database model for Student //
 const Student = require("./db/student");
+// Since I am using Sequelize ORM, direct SQL injection into input fields would not work //
 // Post route //
-
 router.post("/submit", async (req, res, next) => {
   try {
     const { choiceA, choiceB, choiceC } = req.body;
     const dataToCreate = { choiceA, choiceB, choiceC };
-    let temp = false;
+    let validation = false;
 
     for (let choices in dataToCreate) {
       dataToCreate[choices] = dataToCreate[choices].toLowerCase();
       if (dataToCreate[choices] === "calculus") {
-        temp = true;
+        validation = true;
       }
     }
-    if (temp) {
-      const data = await Student.create(dataToCreate);
-      res.json(data);
+    if (validation) {
+      await Student.create(dataToCreate);
+      res.status(201).send("You have succesful submitted your courses");
     } else {
       return res
         .status(406)
